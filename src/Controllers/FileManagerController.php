@@ -17,6 +17,8 @@ use Alexusmai\LaravelFileManager\Events\Paste;
 use Alexusmai\LaravelFileManager\Events\Pasting;
 use Alexusmai\LaravelFileManager\Events\Pasted;
 use Alexusmai\LaravelFileManager\Events\Rename;
+use Alexusmai\LaravelFileManager\Events\Renaming;
+use Alexusmai\LaravelFileManager\Events\Renamed;
 use Alexusmai\LaravelFileManager\Events\Zip as ZipEvent;
 use Alexusmai\LaravelFileManager\Events\Unzip as UnzipEvent;
 use Alexusmai\LaravelFileManager\Requests\RequestValidator;
@@ -185,6 +187,7 @@ class FileManagerController extends Controller
     public function rename(RequestValidator $request)
     {
         event(new Rename($request));
+        event(new Renaming($request));
 
         if(strpos($request->input('newName'),'..')!== false){
                    return [
@@ -195,13 +198,16 @@ class FileManagerController extends Controller
                     ];
        }
 
-        return response()->json(
-            $this->fm->rename(
-                $request->input('disk'),
-                $request->input('newName'),
-                $request->input('oldName')
-            )
+        $renameResponse = $this->fm->rename(
+                            $request->input('disk'),
+                            $request->input('newName'),
+                            $request->input('oldName')
         );
+        if ($renameResponse['result']['status'] === 'success') {
+            event(new Renamed($request));
+        }
+
+        return response()->json($renameResponse);
     }
 
     /**
@@ -282,12 +288,12 @@ class FileManagerController extends Controller
         event(new DirectoryCreating($request));
 
         if(strpos($request->input('name'),'..')!== false){
-         return [
-                     'result' => [
-                     'status'  => 'warning',
-                     'message' => 'invalidPath'.' "'.$request->input('name').'"',
-                     ],
-               ];
+            return [
+                'result' => [
+                    'status'  => 'warning',
+                    'message' => 'invalidPath'.' "'.$request->input('name').'"',
+                ],
+            ];
         }
 
         $createDirectoryResponse = $this->fm->createDirectory(
@@ -315,12 +321,12 @@ class FileManagerController extends Controller
         event(new FileCreating($request));
 
         if(strpos($request->input('name'),'..')!== false){
-                        return [
-                                'result' => [
-                                        'status'  => 'warning',
-                                        'message' => 'invalidPath'.' "'.$request->input('name').'"',
-                                    ],
-                            ];
+            return [
+                'result' => [
+                    'status'  => 'warning',
+                    'message' => 'invalidPath'.' "'.$request->input('name').'"',
+                ],
+            ];
         }
 
         $createFileResponse = $this->fm->createFile(
@@ -384,12 +390,12 @@ class FileManagerController extends Controller
         event(new ZipEvent($request));
 
         if(strpos($request->input('name'),'..')!== false){
-                        return [
-                                'result' => [
-                                        'status'  => 'warning',
-                                        'message' => 'invalidPath'.' "'.$request->input('name').'"',
-                                    ],
-                            ];
+            return [
+                'result' => [
+                    'status'  => 'warning',
+                    'message' => 'invalidPath'.' "'.$request->input('name').'"',
+                ],
+            ];
         }
 
         return $zip->create();
