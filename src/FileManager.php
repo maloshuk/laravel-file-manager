@@ -131,10 +131,11 @@ class FileManager
      * @param $path
      * @param $files
      * @param $overwrite
+     * @param &$uploadedFiles array to store uploaded files data
      *
      * @return array
      */
-    public function upload($disk, $path, $files, $overwrite)
+    public function upload($disk, $path, $files, $overwrite, &$uploadedFiles)
     {
         $fileNotUploaded = false;
 
@@ -178,6 +179,8 @@ class FileManager
                 $file,
                 $file->getClientOriginalName()
             );
+
+            $uploadedFiles[] =$file;
         }
 
         // If the some file was not uploaded

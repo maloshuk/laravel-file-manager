@@ -29,14 +29,17 @@ class FilesUploaded
     /**
      * FilesUploaded constructor.
      *
-     * @param Request $request
+     * @param $disk
+     * @param $path
+     * @param $files array or Laravel (flysystem) files
+     * @param $overwrite 
      */
-    public function __construct(Request $request)
+    public function __construct($disk, $path, $files, $overwrite)
     {
-        $this->disk = $request->input('disk');
-        $this->path = $request->input('path');
-        $this->files = $request->file('files');
-        $this->overwrite = $request->input('overwrite');
+        $this->disk = $disk;
+        $this->path = $path;
+        $this->files = $files;
+        $this->overwrite = $overwrite;
     }
 
     /**

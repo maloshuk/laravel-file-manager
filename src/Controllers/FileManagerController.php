@@ -122,14 +122,20 @@ class FileManagerController extends Controller
     {
         event(new FilesUploading($request));
 
-        $uploadResponse = $this->fm->upload(
-            $request->input('disk'),
-            $request->input('path'),
-            $request->file('files'),
-            $request->input('overwrite')
-        );
+        $disk = $request->input('disk');
+        $path = $request->input('path');
+        $files = $request->file('files');
+        $overwrite = $request->input('overwrite');
+        $uploadedFiles = []; //to store list of files that really uploaded
 
-        event(new FilesUploaded($request));
+        $uploadResponse = $this->fm->upload($disk,
+                                            $path,
+                                            $files,
+                                            $overwrite, 
+                                            $uploadedFiles
+                                    );
+        
+        event(new FilesUploaded($disk, $path, $uploadedFiles, $overwrite));
 
         return response()->json($uploadResponse);
     }
