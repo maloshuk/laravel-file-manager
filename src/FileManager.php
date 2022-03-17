@@ -147,6 +147,12 @@ class FileManager
                 continue;
             }
 
+            //check if file is valid. Interrupted upload will provide file but it will not be valid. 
+            if(!$file->isValid()) { 
+                $fileNotUploaded = true;
+                continue;
+            }
+
             // check file size if need
             if ($this->configRepository->getMaxUploadFileSize()
                 && $file->getSize() / 1024 > $this->configRepository->getMaxUploadFileSize()
