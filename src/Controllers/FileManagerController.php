@@ -26,6 +26,7 @@ use Alexusmai\LaravelFileManager\FileManager;
 use Alexusmai\LaravelFileManager\Services\Zip;
 use Illuminate\Routing\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class FileManagerController extends Controller
 {
@@ -120,7 +121,10 @@ class FileManagerController extends Controller
      */
     public function upload(RequestValidator $request)
     {
-        event(new FilesUploading($request));
+        //FilesUploading event listener can cancell action processing
+        if (!event($ev = new FilesUploading($request))) { 
+            return $this->responseError($ev->cancellationReason);
+        }
 
         $disk = $request->input('disk');
         $path = $request->input('path');
@@ -168,8 +172,11 @@ class FileManagerController extends Controller
      */
     public function paste(RequestValidator $request)
     {
+        if(!event($ev = new Pasting($request))) { 
+            return $this->responseError($ev->cancellationReason);
+        }
+
         event(new Paste($request));
-        event(new Pasting($request));
 
 	    $pasteReponse = $this->fm->paste(
                 $request->input('disk'),
@@ -482,4 +489,16 @@ class FileManagerController extends Controller
     {
         return view('file-manager::fmButton');
     }
+
+    /**
+     * Creates error json response 
+     */
+    private function responseError(string $reason) { 
+        return response()->json([
+            'result' => [
+                'status'  => 'error',
+                'message' => $reason
+            ],
+        ]);
+    } 
 }

@@ -3,9 +3,13 @@
 namespace Alexusmai\LaravelFileManager\Events;
 
 use Illuminate\Http\Request;
+use  Alexusmai\LaravelFileManager\Traits;
+use Alexusmai\LaravelFileManager\Traits\EventCancellableTrait;
 
 class FilesUploading
 {
+    use EventCancellableTrait;
+
     /**
      * @var string
      */
