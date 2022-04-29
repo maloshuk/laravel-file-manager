@@ -27,6 +27,7 @@ use Alexusmai\LaravelFileManager\Services\Zip;
 use Illuminate\Routing\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 
 class FileManagerController extends Controller
 {
@@ -68,12 +69,14 @@ class FileManagerController extends Controller
      */
     public function content(RequestValidator $request)
     {
-        return response()->json(
-            $this->fm->content(
-                $request->input('disk'),
-                $request->input('path')
-            )
+        $jsonData = $this->fm->content(
+                        $request->input('disk'),
+                        $request->input('path')
         );
+        //[SM 29.04.2022]: add data about upload limit
+        $jsonData['uploadLimitBytes'] = Auth::user()->company->storageBytesLeft;
+
+        return response()->json($jsonData);
     }
 
     /**
