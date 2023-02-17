@@ -34,6 +34,11 @@ abstract class Transfer
             if ($this->clipboard['type'] === 'copy') {
                 $this->copy();
             } elseif ($this->clipboard['type'] === 'cut') {
+                //FIXME: [SM 17.02.2023] operation fails when using S3 storage but 'success' is reported. 
+                // Call to Storage::disk($disk)->move(...) returns false, but result is ignored completely. 
+                // Therefore temporary diabling the feature.
+                throw new \Exception("Cut - paste operation is not supported"); 
+                
                 $this->cut();
             }
         } catch (\Exception $exception) {
