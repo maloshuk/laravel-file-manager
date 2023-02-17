@@ -280,12 +280,12 @@ class FileManager
      */
     public function rename($disk, $newName, $oldName)
     {
-        Storage::disk($disk)->move($oldName, $newName);
+        $success = Storage::disk($disk)->move($oldName, $newName);
 
         return [
             'result' => [
-                'status'  => 'success',
-                'message' => 'renamed',
+                'status'  => $success ? 'success' : 'error',
+                'message' => $success ? 'renamed' : 'Renaming failed', //FIXME: can fail on S3 cloud when trying to move folder 
             ],
         ];
     }
