@@ -172,10 +172,6 @@ class FileManager
                 $fileNotUploaded = true;
                 continue;
             }
-           
-            //calculate file sha1 before uploading 
-            $sha1 = sha1_file($file->getRealPath());
-            $file->sha1 = $sha1;
 
             // overwrite or save file
             Storage::disk($disk)->putFileAs(

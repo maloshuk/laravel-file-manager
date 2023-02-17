@@ -67,8 +67,7 @@ class FilesUploaded
             return [
                 'name'      => $file->getClientOriginalName(),
                 'path'      => $this->path.'/'.$file->getClientOriginalName(),
-                'extension' => $file->extension(),
-                'sha1' => $file->sha1
+                'extension' => $file->extension()
             ];
         }, $this->files);
     }
